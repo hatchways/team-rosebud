@@ -1,11 +1,14 @@
 from flask import Flask
+import os
 from flask_sqlalchemy import SQLAlchemy
 from api.ping_handler import ping_handler
 from api.home_handler import home_handler
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/rosebudFlask'
+
+app.config.from_object(os.environ['APP_SETTINGS'])
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
