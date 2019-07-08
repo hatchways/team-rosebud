@@ -1,9 +1,12 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from api.ping_handler import ping_handler
 from api.home_handler import home_handler
 
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/rosebudFlask'
+db = SQLAlchemy(app)
 
 
 app.register_blueprint(home_handler)
