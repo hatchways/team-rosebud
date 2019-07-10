@@ -1,6 +1,6 @@
 import os
 
-TEAM_NAME = os.environ['TEAM_NAME']
+# TEAM_NAME = os.environ['TEAM_NAME']
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 SQLALCHEMY_ECHO = False
