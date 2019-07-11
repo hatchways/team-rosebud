@@ -1,10 +1,14 @@
-from flask import Flask
-from api.ping_handler import ping_handler
-from api.home_handler import home_handler
+from flask import Flask, Blueprint
+from flask_restful import Api
+from resources.Hello import Hello
+from resources.Category import CategoryResource
+from resources.User import UserRegister, User
 
 
-app = Flask(__name__)
+api_bp = Blueprint('api', __name__)
+api = Api(api_bp)
 
-
-app.register_blueprint(home_handler)
-app.register_blueprint(ping_handler)
+api.add_resource(Hello, '/Hello')
+api.add_resource(CategoryResource, '/Category')
+api.add_resource(UserRegister, "/register")
+api.add_resource(User, "/user/<int:user_id>")
