@@ -64,7 +64,7 @@ export default function SignUp() {
       : setEmailError("Valid email is required!");
     password === confirmPassword
       ? setConfirmPasswordError("")
-      : setConfirmPasswordError("password dosen't match!");
+      : setConfirmPasswordError("password doesn't match!");
 
     //TO-DO
   };
@@ -110,7 +110,6 @@ export default function SignUp() {
               name="name"
               onChange={e => setName(e.target.value)}
             />
-
             <TextField
               variant="outlined"
               margin="normal"
@@ -121,9 +120,9 @@ export default function SignUp() {
               name="email"
               autoComplete="email"
               onChange={e => setEmail(e.target.value)}
+              error={emailError === "" ? false : true}
+              helperText={emailError}
             />
-            {emailError}
-
             <TextField
               variant="outlined"
               margin="normal"
@@ -134,9 +133,9 @@ export default function SignUp() {
               type="password"
               id="password"
               onChange={e => setPassword(e.target.value)}
+              error={passwordError === "" ? false : true}
+              helperText={passwordError}
             />
-            {passwordError}
-
             <TextField
               variant="outlined"
               margin="normal"
@@ -147,10 +146,11 @@ export default function SignUp() {
               type="password"
               id="password"
               onChange={e => setConfirmPassword(e.target.value)}
+              error={confirmPasswordError === "" ? false : true}
+              helperText={confirmPasswordError}
             />
-            {confirmPasswordError}
-            <br />
             <FormControlLabel
+              className={classes.form}
               control={<Checkbox value="remember" color="primary" />}
               label={
                 <Typography variant="body2" color="textSecondary">
@@ -161,7 +161,6 @@ export default function SignUp() {
                 </Typography>
               }
             />
-            <br />
             <Button
               type="submit"
               variant="contained"
