@@ -3,10 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from marshmallow import Schema, fields, pre_load, validate
 
-
 # Order matters: Initialize SQLAlchemy before Marshmallow
 db = SQLAlchemy()
 ma = Marshmallow()
+
 
 class UserModel(db.Model):
     __tablename__ = "users"
@@ -15,6 +15,8 @@ class UserModel(db.Model):
     username = db.Column(db.String(80), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
+
+    projects = db.relationship("ProjectModel", back_populates="user")
 
     @classmethod
     def find_by_username(cls, username: str) -> "UserModel":
@@ -33,32 +35,15 @@ class UserModel(db.Model):
         db.session.commit()
 
 
-class UserSchema(ma.ModelSchema):
-    class Meta:
-        model = UserModel
-        load_only = ("password",)
-        dump_only = ("id",)
-
-
-class Category(db.Model):
-    __tablename__ = 'categories'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), unique=True, nullable=False)
-
-    def __init__(self, name):
-        self.name = name
-
-class CategorySchema(ma.Schema):
-    id = fields.Integer()
-    name = fields.String(required=True)
-
 class ProjectModel(db.Model):
     __tablename__ = 'projects'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False, unique=True)
     link = db.Column(db.String(120), nullable=False, unique=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user = db.relationship("UserModel", back_populates="projects")
 
     @classmethod
     def find_by_name(cls, name: str) -> "ProjectModel":
@@ -76,8 +61,33 @@ class ProjectModel(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+
 class ProjectSchema(ma.ModelSchema):
-    
     class Meta:
         model = ProjectModel
-    user = ma.Nested(UserSchema)
+        include_fk = True
+
+
+class UserSchema(ma.ModelSchema):
+
+    class Meta:
+        model = UserModel
+        load_only = ("password",)
+        dump_only = ("id",)
+        include_fk = True
+
+    projects = ma.Nested(ProjectSchema, many=True)
+
+
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), unique=True, nullable=False)
+
+    def __init__(self, name):
+        self.name = name
+
+class CategorySchema(ma.Schema):
+    id = fields.Integer()
+    name = fields.String(required=True)
+
