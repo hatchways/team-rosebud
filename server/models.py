@@ -7,6 +7,31 @@ from marshmallow import Schema, fields, pre_load, validate
 db = SQLAlchemy()
 ma = Marshmallow()
 
+association_table = db.Table('association_table',
+                            db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+                            db.Column('skill_id', db.Integer, db.ForeignKey('skills.id')))
+
+
+class SkillModel(db.Model):
+    __tablename__ = 'skills'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False, unique=True)
+
+    @classmethod
+    def find_by_name(cls, name: str) -> "SkillModel":
+        return cls.query.filter_by(name=name).first()
+
+    @classmethod
+    def find_by_id(cls, _id: int) -> "SkillModel":
+        return cls.query.filter_by(id=_id).first()
+
+    def save_to_db(self) -> None:
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self) -> None:
+        db.session.delete(self)
+        db.session.commit()
 
 class UserModel(db.Model):
     __tablename__ = "users"
@@ -17,6 +42,7 @@ class UserModel(db.Model):
     email = db.Column(db.String(120), nullable=False, unique=True)
 
     projects = db.relationship("ProjectModel", back_populates="user")
+    skills = db.relationship('SkillModel', secondary="association_table", backref='users', lazy="joined")
 
     @classmethod
     def find_by_username(cls, username: str) -> "UserModel":
@@ -68,6 +94,12 @@ class ProjectSchema(ma.ModelSchema):
         include_fk = True
 
 
+class SkillSchema(ma.Schema):
+    class Meta:
+        model = SkillModel
+        
+    
+
 class UserSchema(ma.ModelSchema):
 
     class Meta:
@@ -77,17 +109,10 @@ class UserSchema(ma.ModelSchema):
         include_fk = True
 
     projects = ma.Nested(ProjectSchema, many=True)
+    skills = ma.Nested(SkillSchema, many=True)
 
 
-class Category(db.Model):
-    __tablename__ = 'categories'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), unique=True, nullable=False)
+    
 
-    def __init__(self, name):
-        self.name = name
 
-class CategorySchema(ma.Schema):
-    id = fields.Integer()
-    name = fields.String(required=True)
 
