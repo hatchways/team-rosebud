@@ -94,10 +94,10 @@ class ProjectSchema(ma.ModelSchema):
         include_fk = True
 
 
-class SkillSchema(ma.Schema):
+class SkillSchema(ma.ModelSchema):
     class Meta:
         model = SkillModel
-        
+        include_fk = True
     
 
 class UserSchema(ma.ModelSchema):
