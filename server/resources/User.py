@@ -7,6 +7,7 @@ USER_ALREADY_EXISTS = "A user with that username already exists."
 CREATED_SUCCESSFULLY = "User created successfully."
 USER_NOT_FOUND = "User not found."
 USER_DELETED = "User deleted."
+EMAIL_ALREADY_EXISTS = "A user with that email already exists."
 
 user_schema = UserSchema()
 
@@ -21,6 +22,9 @@ class UserRegister(Resource):
 
         if UserModel.find_by_username(user.username):
             return {"message": USER_ALREADY_EXISTS}, 400
+        
+        if UserModel.find_by_email(user.email):
+            return {"message": EMAIL_ALREADY_EXISTS}, 400
 
         user.save_to_db()
 

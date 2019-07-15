@@ -9,6 +9,7 @@ SKILL_NOT_FOUND = "Skill not found."
 SKILL_DELETED = "Skill deleted."
 
 skill_schema = SkillSchema()
+skill_list_schema = SkillSchema(many=True)
 
 
 class SkillCreate(Resource):
@@ -44,3 +45,9 @@ class Skill(Resource):
 
         skill.delete_from_db()
         return {"message": SKILL_DELETED}, 200
+
+
+class SkillList(Resource):
+    @classmethod
+    def get(cls):
+        return {"items": skill_list_schema.dump(SkillModel.find_all())}, 200

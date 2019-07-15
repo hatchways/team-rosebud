@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from marshmallow import Schema, fields, pre_load, validate
+from typing import List
 
 # Order matters: Initialize SQLAlchemy before Marshmallow
 db = SQLAlchemy()
@@ -24,6 +25,10 @@ class SkillModel(db.Model):
     @classmethod
     def find_by_id(cls, _id: int) -> "SkillModel":
         return cls.query.filter_by(id=_id).first()
+    
+    @classmethod
+    def find_all(cls) -> List["SkillModel"]:
+        return cls.query.all()
 
     def save_to_db(self) -> None:
         db.session.add(self)
@@ -47,6 +52,10 @@ class UserModel(db.Model):
     @classmethod
     def find_by_username(cls, username: str) -> "UserModel":
         return cls.query.filter_by(username=username).first()
+    
+    @classmethod
+    def find_by_email(cls, email: str) -> "UserModel":
+        return cls.query.filter_by(email=email).first()
 
     @classmethod
     def find_by_id(cls, _id: int) -> "UserModel":
@@ -97,6 +106,7 @@ class ProjectSchema(ma.ModelSchema):
 class SkillSchema(ma.ModelSchema):
     class Meta:
         model = SkillModel
+        dump_only = ("users",)
         include_fk = True
     
 
@@ -105,7 +115,7 @@ class UserSchema(ma.ModelSchema):
     class Meta:
         model = UserModel
         load_only = ("password",)
-        dump_only = ("id",)
+        # dump_only = ("id",)
         include_fk = True
 
     projects = ma.Nested(ProjectSchema, many=True)
