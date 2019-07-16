@@ -42,7 +42,7 @@ class UserModel(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), nullable=False, unique=True)
+    username = db.Column(db.String(80))
     password = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
 
@@ -115,7 +115,7 @@ class UserSchema(ma.ModelSchema):
     class Meta:
         model = UserModel
         load_only = ("password",)
-        # dump_only = ("id",)
+        dump_only = ("id",)
         include_fk = True
 
     projects = ma.Nested(ProjectSchema, many=True)
