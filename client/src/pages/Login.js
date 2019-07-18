@@ -46,28 +46,35 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Login() {
+function Login(props) {
   const classes = useStyles();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const login = e => {
     e.preventDefault();
     if (email !== "" && password !== "") {
       let status;
-      fetch("/api/user/1", {
-        method: "GET",
+      fetch("/api/login", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json"
-        }
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
       })
         .then(res => {
           status = res.status;
           //TODO
+          return res.json();
         })
         .then(res => {
-          console.log(res);
+          if (status === 200) props.history.push("/profile");
+          else setMessage(res.message);
         });
     }
   };
@@ -102,6 +109,7 @@ function Login() {
           </Typography>
           <form className={classes.form}>
             <TextField
+              autoFocus
               variant="outlined"
               margin="normal"
               required
@@ -137,6 +145,7 @@ function Login() {
             >
               Login
             </Button>
+            {message}
           </form>
         </div>
       </Grid>

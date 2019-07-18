@@ -19,6 +19,7 @@ import Navigation from "./Navigation";
 import { makeStyles } from "@material-ui/core/styles";
 
 import image from "../TEST-images/apple-touch-icon.png";
+import AddProject from "./AddProject";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -187,7 +188,13 @@ function Profile() {
               </AppBar>
             </Grid>
             <Grid item>
-              {value === 0 && <TabContainer>Item One</TabContainer>}
+              {value === 0 && (
+                <TabContainer>
+                  <Grid container justify="flex-start">
+                    <AddProject />
+                  </Grid>
+                </TabContainer>
+              )}
               {value === 1 && <TabContainer>Item Two</TabContainer>}
               {value === 2 && <TabContainer>Item Three</TabContainer>}
             </Grid>
