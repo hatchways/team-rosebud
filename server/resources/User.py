@@ -8,6 +8,7 @@ from flask_jwt_extended import (
     get_jwt_identity,
     jwt_required,
     get_raw_jwt,
+    fresh_jwt_required
 )
 from marshmallow import ValidationError
 from models import db, ma, UserModel, UserSchema
@@ -31,10 +32,7 @@ class UserRegister(Resource):
             user = user_schema.load(request.get_json())
         except ValidationError as err:
             return err.messages, 400
-
-        if UserModel.find_by_username(user.username):
-            return {"message": USER_ALREADY_EXISTS}, 400
-        
+     
         if UserModel.find_by_email(user.email):
             return {"message": EMAIL_ALREADY_EXISTS}, 400
 
@@ -53,6 +51,7 @@ class User(Resource):
         return user_schema.dump(user), 200
 
     @classmethod
+    @fresh_jwt_required
     def delete(cls, user_id: int):
         user = UserModel.find_by_id(user_id)
         if not user:
@@ -61,6 +60,29 @@ class User(Resource):
         user.delete_from_db()
         return {"message": USER_DELETED}, 200
 
+    @classmethod
+    @fresh_jwt_required
+    def put(cls, user_id: int):
+        user_json = request.get_json()
+        user = UserModel.find_by_id(user_id)
+        current_user = get_jwt_identity()
+        
+        if user and user.id == current_user:
+            try:
+                #loading in form data through validation/clean by marshmallow
+                user.location = user_json["location"]
+                user.yearsexp = user_json["yearsexp"]
+                user.description = user_json["description"]
+
+            except ValidationError as err:
+                return err.messages, 400
+            
+            user.save_to_db()
+            return user_schema.dump(user), 200
+        else:
+            return{"message": INVALID_CREDENTIALS}, 401
+        
+        
 class UserLogin(Resource):
     @classmethod
     def post(cls):

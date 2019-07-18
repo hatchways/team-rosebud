@@ -45,9 +45,9 @@ class UserModel(db.Model):
     username = db.Column(db.String(80))
     password = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
-    location = db.Column(db.String(120), nullable=False)
-    yearsexp = db.Column(db.Integer, nullable=False)
-    description =  db.Column(db.String(256), nullable=False)
+    location = db.Column(db.String(120))
+    yearsexp = db.Column(db.Integer)
+    description =  db.Column(db.String(256))
 
     projects = db.relationship("ProjectModel", back_populates="user")
     skills = db.relationship('SkillModel', secondary="association_table", backref='users', lazy="joined")
