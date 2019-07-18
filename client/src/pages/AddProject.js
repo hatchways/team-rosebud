@@ -1,21 +1,16 @@
 import React, { useState } from "react";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
-import IconButton from "@material-ui/core/IconButton";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import Chip from "@material-ui/core/Chip";
-import { Grid } from "@material-ui/core";
 
 export default function AddProject() {
   const [open, setOpen] = useState(true);
-  const [skill, setSkill] = useState("");
-  const [chipData, setChipData] = React.useState([]);
+  const [image, setImage] = useState("");
 
   function handleClickOpen() {
     setOpen(true);
@@ -23,6 +18,10 @@ export default function AddProject() {
 
   function handleClose() {
     setOpen(false);
+  }
+
+  function openImage(e) {
+    setImage(URL.createObjectURL(e));
   }
 
   return (
@@ -66,6 +65,22 @@ export default function AddProject() {
             label="GitHub Link"
             name="gitHub"
           />
+          <div>
+            <img src={image} alt="" style={{ maxWidth: "150px" }} />
+          </div>
+          <input
+            accept="image/*"
+            style={{ display: "none" }}
+            id="raised-button-file"
+            multiple
+            type="file"
+            onChange={e => openImage(e.target.files[0])}
+          />
+          <label htmlFor="raised-button-file">
+            <Button variant="raised" component="span">
+              Add image
+            </Button>
+          </label>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
