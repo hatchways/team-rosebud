@@ -131,7 +131,7 @@ class UserLogin(Resource):
         if user and safe_str_cmp(user_data.password, user.password):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
-            return {"access_token": access_token, "refresh_token": refresh_token}, 200
+            return {"access_token": access_token, "refresh_token": refresh_token, "user_id":user.id}, 200
         
         return{"message": INVALID_CREDENTIALS}, 401
 
