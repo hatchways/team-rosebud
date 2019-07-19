@@ -71,6 +71,7 @@ class User(Resource):
         if user and user.id == current_user:
             try:
                 #loading in form data through validation/clean by marshmallow
+                user.username = user_json["username"]
                 user.location = user_json["location"]
                 user.yearsexp = user_json["yearsexp"]
                 user.description = user_json["description"]
