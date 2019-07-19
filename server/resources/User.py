@@ -11,8 +11,9 @@ from flask_jwt_extended import (
     fresh_jwt_required
 )
 from marshmallow import ValidationError
-from models import db, ma, UserModel, UserSchema
+from models import db, ma, UserModel, UserSchema, SkillModel, SkillSchema
 from blacklist import BLACKLIST
+import ipdb
 
 USER_ALREADY_EXISTS = "A user with that username already exists."
 CREATED_SUCCESSFULLY = "User created successfully."
@@ -23,7 +24,7 @@ EMAIL_ALREADY_EXISTS = "A user with that email already exists."
 USER_LOGGED_OUT = "User {} successfully logged out."
 
 user_schema = UserSchema()
-
+skill_schema = SkillSchema()
 
 class UserRegister(Resource):
     @classmethod
@@ -81,7 +82,43 @@ class User(Resource):
             return user_schema.dump(user), 200
         else:
             return{"message": INVALID_CREDENTIALS}, 401
-        
+
+class UserSkill(Resource): #adding a new skill to a user
+    @classmethod
+    @jwt_required
+    def put(cls, user_id: int):
+        skill_user_json = request.get_json() #loading form data should be JSON header with skill name
+        user = UserModel.find_by_id(user_id) # loading appropriate user from endpoint
+        current_user = get_jwt_identity() #obtaining user ID from web token 
+
+        if user and user.id == current_user: #ensuring user who is submitting the form is making the request
+            try:
+                skill_name = skill_user_json["name"]
+            except ValidationError as err:
+                return err.messages, 400
+            
+            # ipdb.set_trace()
+            skill = SkillModel.find_by_name(skill_name)
+            if skill:
+                if skill not in user.skills:
+                    user.skills.append(skill) #append the skill object to the skills list in the user JSON object
+                else:
+                    return {"message": "User has already added that skill" }, 400
+
+            else: #if skill is not found then create skill object in db and also append to skills list
+                try:
+                    skill = skill_schema.load(skill_user_json)
+                except ValidationError as err:
+                    return err.messages, 400
+                
+                skill.save_to_db()
+                user.skills.append(skill)
+            
+            user.save_to_db()
+            return user_schema.dump(user), 200
+        else:
+            return{"message": INVALID_CREDENTIALS}, 401
+            
         
 class UserLogin(Resource):
     @classmethod
