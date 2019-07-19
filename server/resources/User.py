@@ -84,7 +84,7 @@ class User(Resource):
         else:
             return{"message": INVALID_CREDENTIALS}, 401
 
-class UserSkill(Resource): #adding a new skill to a user
+class UserSkill(Resource): #adding a new skill to a user single request
     @classmethod
     @jwt_required
     def put(cls, user_id: int):
