@@ -73,8 +73,11 @@ function Login(props) {
           return res.json();
         })
         .then(res => {
-          if (status === 200) props.history.push("/profile");
-          else setMessage(res.message);
+          if (status === 200) {
+            localStorage.setItem("access_token", res.access_token);
+            localStorage.setItem("user_id", res.user_id);
+            props.history.push("/profile");
+          } else setMessage(res.message);
         });
     }
   };

@@ -9,7 +9,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 export default function AddProject() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [image, setImage] = useState("");
 
   function handleClickOpen() {

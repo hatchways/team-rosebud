@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+import { withRouter } from "react-router-dom";
 
 import Avatar from "@material-ui/core/Avatar";
 import Box from "@material-ui/core/Box";
@@ -76,19 +78,67 @@ function TabContainer(props) {
   return <Typography style={{ padding: 10 }}>{props.children}</Typography>;
 }
 
-function Profile() {
+function Profile(props) {
   const classes = useStyles();
 
   const [value, setValue] = useState(0);
+  const [data, setData] = useState([]);
+  const [username, setUsername] = useState("");
+  const [location, setLocation] = useState("");
+  const [yearsexp, setYearsexp] = useState("");
+  const [description, setDescription] = useState("");
+  const [skills, setSkills] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      fetch("/api/user/" + localStorage.getItem("user_id"), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+        .then(res => {
+          return res.json();
+        })
+        .then(res => {
+          setUsername(res.username);
+          setLocation(res.location);
+          setYearsexp(res.yearsexp);
+          setDescription(res.description);
+          setSkills(res.skills);
+        });
+    };
+
+    fetchData();
+  }, []);
 
   function handleChange(event, newValue) {
     setValue(newValue);
   }
 
+  const handleDelete = skill => () => {
+    console.log(skill.name);
+    fetch("/api/user/" + localStorage.getItem("user_id") + "/skill", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("access_token")
+      },
+      body: JSON.stringify({
+        name: skill.name,
+        id: skill.id
+      })
+    }).then(res => {
+      if (res.status === 200) {
+        setValue(1);
+      }
+    });
+  };
+
   return (
-    <Grid container className={classes.root} justify="flex-start">
+    <Grid container className={classes.root} justify="space-between">
       <Navigation />
-      <Grid container>
+      <Grid container justify="space-between">
         <Grid
           item
           xs={3}
@@ -107,10 +157,10 @@ function Profile() {
               />
               <EditModal />
               <Box fontWeight="fontWeightBold" fontSize="h5.fontSize">
-                Warren Shellman
+                {username}
               </Box>
               <Box fontWeight="fontWeightRegular" fontSize="fontSize">
-                Toronto, ON
+                {location}
               </Box>
 
               <div>
@@ -133,11 +183,16 @@ function Profile() {
               >
                 Skills:
               </Box>
-              <Chip label="Basic Chip" className={classes.chip} />
-              <Chip label="Basic Chip" className={classes.chip} />
-              <Chip label="Basic Chip" className={classes.chip} />
-              <Chip label="Basic Chip" className={classes.chip} />
-              <Chip label="Basic Chip" className={classes.chip} />
+              {skills.map(data => {
+                return (
+                  <Chip
+                    key={data.id}
+                    label={data.name}
+                    className={classes.chip}
+                    onDelete={handleDelete(data)}
+                  />
+                );
+              })}
             </div>
           </Grid>
           <Grid item>
@@ -156,7 +211,7 @@ function Profile() {
                   alignContent: "center"
                 }}
               >
-                6
+                {yearsexp}
               </div>
             </div>
           </Grid>
@@ -165,10 +220,7 @@ function Profile() {
               <Box fontWeight="fontWeightBold" fontSize="fontSize">
                 About:
               </Box>
-              <Box fontSize="fontSize">
-                Frontend development with 5+ years of experience. I love working
-                with Wordpress and page applications development on React.
-              </Box>
+              <Box fontSize="fontSize">{description}</Box>
             </div>
           </Grid>
         </Grid>
@@ -205,4 +257,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default withRouter(Profile);
