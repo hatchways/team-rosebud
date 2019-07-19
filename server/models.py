@@ -8,7 +8,7 @@ from typing import List
 db = SQLAlchemy()
 ma = Marshmallow()
 
-association_table = db.Table('association_table',
+users_skills = db.Table('users_skills',
                             db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
                             db.Column('skill_id', db.Integer, db.ForeignKey('skills.id')))
 
@@ -45,12 +45,12 @@ class UserModel(db.Model):
     username = db.Column(db.String(80))
     password = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
-    location = db.Column(db.String(120), nullable=False)
-    yearsexp = db.Column(db.Integer, nullable=False)
-    description =  db.Column(db.String(256), nullable=False)
+    location = db.Column(db.String(120))
+    yearsexp = db.Column(db.Integer)
+    description =  db.Column(db.String(256))
 
     projects = db.relationship("ProjectModel", back_populates="user")
-    skills = db.relationship('SkillModel', secondary="association_table", backref='users', lazy="joined")
+    skills = db.relationship('SkillModel', secondary="users_skills", backref='users', lazy="joined")
 
     @classmethod
     def find_by_username(cls, username: str) -> "UserModel":
