@@ -96,8 +96,7 @@ class UserSkill(Resource): #adding a new skill to a user
                 skill_name = skill_user_json["name"]
             except ValidationError as err:
                 return err.messages, 400
-            
-            # ipdb.set_trace()
+
             skill = SkillModel.find_by_name(skill_name)
             if skill:
                 if skill not in user.skills:
@@ -118,7 +117,31 @@ class UserSkill(Resource): #adding a new skill to a user
             return user_schema.dump(user), 200
         else:
             return{"message": INVALID_CREDENTIALS}, 401
-            
+
+    @classmethod
+    @jwt_required
+    def patch(cls, user_id: int):
+        skill_user_json = request.get_json()
+        user = UserModel.find_by_id(user_id) 
+        current_user = get_jwt_identity() 
+
+        if user and user.id == current_user:
+            try:
+                skill_name = skill_user_json["name"]
+            except ValidationError as err:
+                return err.messages, 400
+
+            skill = SkillModel.find_by_name(skill_name)
+
+            if skill in user.skills:
+                user.skills.remove(skill)
+            else:
+                return {"message": "Skill not found in user."}, 404
+
+            user.save_to_db()
+            return user_schema.dump(user), 200
+        else:
+            return{"message": INVALID_CREDENTIALS}, 401
         
 class UserLogin(Resource):
     @classmethod
