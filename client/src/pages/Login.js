@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link, withRouter } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import Link from "@material-ui/core/Link";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
@@ -46,11 +46,37 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Login() {
+function Login(props) {
   const classes = useStyles();
 
-  const login = () => {
-    //TO-DO
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  const login = e => {
+    e.preventDefault();
+    if (email !== "" && password !== "") {
+      let status;
+      fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      })
+        .then(res => {
+          status = res.status;
+          //TODO
+          return res.json();
+        })
+        .then(res => {
+          if (status === 200) props.history.push("/profile");
+          else setMessage(res.message);
+        });
+    }
   };
 
   return (
@@ -65,14 +91,16 @@ export default function Login() {
             Please enter your details to signup and be part of our community
           </Typography>
         </Box>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          className={classes.submit}
-        >
-          Create an Account
-        </Button>
+        <Link to="/signup" style={{ textDecoration: "none" }}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Create an Account
+          </Button>
+        </Link>
       </Grid>
       <Grid item xs={12} sm={7} md={7} component={Paper} elevation={6}>
         <div className={classes.paper}>
@@ -81,6 +109,7 @@ export default function Login() {
           </Typography>
           <form className={classes.form}>
             <TextField
+              autoFocus
               variant="outlined"
               margin="normal"
               required
@@ -89,6 +118,7 @@ export default function Login() {
               label="Email Address"
               name="email"
               autoComplete="email"
+              onChange={e => setEmail(e.target.value)}
             />
 
             <TextField
@@ -100,6 +130,7 @@ export default function Login() {
               label="Password"
               type="password"
               id="password"
+              onChange={e => setPassword(e.target.value)}
             />
             <Link href="#" variant="body2">
               {"Forgot Password?"}
@@ -112,11 +143,13 @@ export default function Login() {
               className={classes.submit}
               onClick={login}
             >
-              Sign Up
+              Login
             </Button>
+            {message}
           </form>
         </div>
       </Grid>
     </Grid>
   );
 }
+export default withRouter(Login);

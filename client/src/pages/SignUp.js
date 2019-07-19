@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
+import { Link, withRouter } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
@@ -48,25 +48,65 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function SignUp() {
+function SignUp(props) {
   const classes = useStyles();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
-  const signup = () => {
-    email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
-      ? setEmailError("")
-      : setEmailError("Valid email is required!");
-    password === confirmPassword
-      ? setConfirmPasswordError("")
-      : setConfirmPasswordError("password doesn't match!");
+  const signup = e => {
+    e.preventDefault();
+    if (name === "") {
+      setNameError("Please fill out this field.");
+      return;
+    } else setNameError("");
+    if (!email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
+      setEmailError("Valid email is required!");
+      return;
+    } else setEmailError("");
+    if (password.length < 6) {
+      setPasswordError("Password must be atleast 6 char long");
+      return;
+    } else setPasswordError("");
+    if (!(password === confirmPassword)) {
+      setConfirmPasswordError("password doesn't match!");
+      return;
+    } else setConfirmPasswordError("");
 
     //TO-DO
+    let status;
+    fetch("/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: name,
+        password: password,
+        email: email
+      })
+    })
+      .then(res => {
+        status = res.status;
+
+        return res.json();
+      })
+      .then(res => {
+        if (status === 400) {
+          if (res.message === "A user with that email already exists.") {
+            setEmailError("Email already registered.");
+          } else setNameError(res.message);
+        } else if (status === 201) props.history.push("/login");
+        else throw Error("Server error");
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
   };
 
   return (
@@ -85,14 +125,16 @@ export default function SignUp() {
             Already have an account? Please login to keep connections
           </Typography>
         </Box>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          className={classes.submit}
-        >
-          Login
-        </Button>
+        <Link to="/login" style={{ textDecoration: "none" }}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Login
+          </Button>
+        </Link>
       </Grid>
       <Grid item xs={12} sm={7} md={7} component={Paper} elevation={6}>
         <div className={classes.paper}>
@@ -109,6 +151,8 @@ export default function SignUp() {
               label="Name"
               name="name"
               onChange={e => setName(e.target.value)}
+              error={nameError === "" ? false : true}
+              helperText={nameError}
             />
             <TextField
               variant="outlined"
@@ -155,7 +199,7 @@ export default function SignUp() {
               label={
                 <Typography variant="body2" color="textSecondary">
                   {"By signing up I agree with "}
-                  <Link color="primary" href="#">
+                  <Link to="#" style={{ textDecoration: "none" }}>
                     terms and conditions
                   </Link>
                 </Typography>
@@ -176,3 +220,4 @@ export default function SignUp() {
     </Grid>
   );
 }
+export default withRouter(SignUp);
