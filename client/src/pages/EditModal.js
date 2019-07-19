@@ -63,7 +63,7 @@ function EditModal(props) {
       console.log(res.status);
       if (res.status === 200) {
         //TODO check for successfull update in db
-        props.history.push("/profile");
+        //props.history.push("/profile");
       }
       //return res.json();
     });
