@@ -414,7 +414,7 @@ function Discover() {
           >
             {filteredUsers.map(data => {
               return (
-                <Card className={classes.usersCard}>
+                <Card elevation={4} className={classes.usersCard}>
                   <Grid
                     container
                     direction="column"
