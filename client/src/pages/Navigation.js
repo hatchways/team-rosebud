@@ -1,5 +1,5 @@
 import React from "react";
-
+import { withRouter } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -9,8 +9,6 @@ import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import Icon from "@material-ui/core/Icon";
 import { grey } from "@material-ui/core/colors";
-import Box from "@material-ui/core/Box";
-import { maxHeight } from "@material-ui/system";
 
 //import image from "../TEST-images/apple-touch-icon.png";
 
@@ -51,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Navigation() {
+function Navigation(props) {
   const classes = useStyles();
 
   return (
@@ -77,7 +75,12 @@ function Navigation() {
       </Grid>
       <Grid item className={classes.item}>
         <div>
-          <Button className={classes.button}>Developers</Button>
+          <Button
+            className={classes.button}
+            onClick={e => props.history.push("/discover")}
+          >
+            Developers
+          </Button>
           <Button className={classes.button}>Companies</Button>
           <Button className={classes.button}>About</Button>
         </div>
@@ -100,4 +103,4 @@ function Navigation() {
   );
 }
 
-export default Navigation;
+export default withRouter(Navigation);

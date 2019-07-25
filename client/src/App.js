@@ -5,6 +5,7 @@ import { BrowserRouter, Route } from "react-router-dom";
 import { theme } from "./themes/theme";
 import LandingPage from "./pages/Landing";
 import ProfilePage from "./pages/Profile";
+import DiscoverPage from "./pages/Discover";
 
 import "./App.css";
 
@@ -14,6 +15,7 @@ function App() {
       <BrowserRouter>
         <Route path="/" component={LandingPage} />
         <Route path="/profile" component={ProfilePage} />
+        <Route path="/discover" component={DiscoverPage} />
       </BrowserRouter>
     </MuiThemeProvider>
   );

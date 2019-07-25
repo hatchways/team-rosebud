@@ -82,7 +82,6 @@ function Profile(props) {
   const classes = useStyles();
 
   const [value, setValue] = useState(0);
-  const [data, setData] = useState([]);
   const [username, setUsername] = useState("");
   const [location, setLocation] = useState("");
   const [yearsexp, setYearsexp] = useState("");
@@ -117,7 +116,6 @@ function Profile(props) {
   }
 
   const handleDelete = skill => () => {
-    console.log(skill.name);
     fetch("/api/user/" + localStorage.getItem("user_id") + "/skill", {
       method: "PATCH",
       headers: {
