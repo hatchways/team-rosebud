@@ -80,7 +80,7 @@ class ProjectModel(db.Model):
     name = db.Column(db.String(80), nullable=False, unique=True)
     demoLink = db.Column(db.String(120))
     githubLink = db.Column(db.String(120))
-    image = db.Column(db.String(120), nullable=False, unique=True)
+    image = db.Column(db.String(120), unique=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     user = db.relationship("UserModel", back_populates="projects")

@@ -1,5 +1,5 @@
-from cStringIO import cStringIO
-
+from io import StringIO, BytesIO
+import config
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key as S3Key
 from flask_restful import Resource, reqparse, abort
@@ -19,7 +19,7 @@ def upload_s3(file, key_name, content_type, bucket_name):
     """
     # create connection
     conn = S3Connection(
-        app.config['AWS_ACCESS_KEY_ID'], app.config['AWS_SECRET_ACCESS_KEY'])
+        config.aws_access_key, config.aws_secret_access_key)
 
     # upload the file after getting the right bucket
     bucket = conn.get_bucket(bucket_name)
@@ -61,19 +61,21 @@ class UploadImage(Resource):
         args = self.put_parser.parse_args()
         image = args['image']
 
-        # check logo extension
+        # check img extension
         extension = image.filename.rsplit('.', 1)[1].lower()
-        if '.' in image.filename and not extension in app.config['ALLOWED_EXTENSIONS']:
+        if '.' in image.filename and not extension in config.ALLOWED_EXTENSIONS:
             abort(400, message="File extension is not one of our supported types.")
 
+        kname = image.filename.rsplit('.', 1)[0].lower()
+
         # create a file object of the image
-        image_file = StringIO()
+        image_file = BytesIO()
         image.save(image_file)
 
         # upload to s3
-        key_name = '{0}.{1}'.format('some-name', extension)
-        content_type = app.config['FILE_CONTENT_TYPES'][extension]
+        key_name = '{0}.{1}'.format(kname, extension)
+        content_type = config.FILE_CONTENT_TYPES[extension]
         bucket_name = 'rosebud-hatchways'
-        logo_url = upload_s3(image_file, key_name, content_type, bucket_name)
+        img_url = upload_s3(image_file, key_name, content_type, bucket_name)
 
-        return {'logo_url': logo_url}
+        return {'img_url': img_url}
