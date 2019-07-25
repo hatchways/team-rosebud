@@ -128,6 +128,9 @@ function Profile(props) {
       })
     }).then(res => {
       if (res.status === 200) {
+        const valueToRemove = skill;
+        const filteredSkills = skills.filter (item => item !== valueToRemove);
+        setSkills(filteredSkills)
       }
     });
   };
