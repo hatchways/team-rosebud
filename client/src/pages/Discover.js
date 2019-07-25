@@ -247,7 +247,7 @@ function Discover() {
     <Grid container justify="center">
       <Navigation />
       <Grid container direction="column" justify="center">
-        <Card className={classes.card}>
+        <Card elevation={4} className={classes.card}>
           <Grid item xs={12}>
             <Grid
               container
