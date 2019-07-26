@@ -67,11 +67,11 @@ function EditModal(props) {
         //TODO check for successfull update in db
         //props.history.push("/profile");
         const parent = {
-        location: location,
-        yearsexp: yearsexp,
-        description: description
+          location: location,
+          yearsexp: yearsexp,
+          description: description
         };
-        props.onChange(parent)
+        props.onChange(parent);
       }
       //return res.json();
     });
@@ -97,9 +97,9 @@ function EditModal(props) {
     setChipData(chips => chips.filter(chip => chip.key !== chipToDelete.key));
   };
 
-  const addSkills = () => {
-    if (!skill) return;
-    chipData.push({ key: chipData.length, label: skill });
+  const addSkills = e => {
+    if (!e) return;
+    chipData.push({ key: chipData.length, label: e });
     setSkill("");
   };
 
@@ -147,6 +147,12 @@ function EditModal(props) {
             name="skills"
             value={skill}
             onChange={e => setSkill(e.target.value)}
+            onKeyPress={e => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addSkills(e.target.value);
+              }
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
