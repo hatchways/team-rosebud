@@ -9,7 +9,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Chip from "@material-ui/core/Chip";
-import { Grid } from "@material-ui/core";
 
 function EditModal(props) {
   const [open, setOpen] = useState(false);
@@ -18,6 +17,7 @@ function EditModal(props) {
   const [location, setLocation] = useState("");
   const [yearsexp, setYearsexp] = useState("");
   const [description, setDescription] = useState("");
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,7 +31,7 @@ function EditModal(props) {
           return res.json();
         })
         .then(res => {
-          console.log(res.location);
+          setUsername(res.username);
           if (res.location === null) setOpen(true);
         });
     };
@@ -55,20 +55,27 @@ function EditModal(props) {
         Authorization: "Bearer " + localStorage.getItem("access_token")
       },
       body: JSON.stringify({
+        username: username,
         location: location,
         yearsexp: yearsexp,
         description: description
       })
     }).then(res => {
+      console.log(res);
       console.log(res.status);
       if (res.status === 200) {
         //TODO check for successfull update in db
         //props.history.push("/profile");
+        const parent = {
+          location: location,
+          yearsexp: yearsexp,
+          description: description
+        };
+        props.onChange(parent);
       }
       //return res.json();
     });
 
-    console.log(chipData);
     if (chipData.length !== 0) {
       chipData.map(chip =>
         fetch("/api/user/" + localStorage.getItem("user_id") + "/skill", {
@@ -83,7 +90,6 @@ function EditModal(props) {
         })
       );
     }
-
     setOpen(false);
   }
 
@@ -91,9 +97,9 @@ function EditModal(props) {
     setChipData(chips => chips.filter(chip => chip.key !== chipToDelete.key));
   };
 
-  const addSkills = () => {
-    if (!skill) return;
-    chipData.push({ key: chipData.length, label: skill });
+  const addSkills = e => {
+    if (!e) return;
+    chipData.push({ key: chipData.length, label: e });
     setSkill("");
   };
 
@@ -141,6 +147,12 @@ function EditModal(props) {
             name="skills"
             value={skill}
             onChange={e => setSkill(e.target.value)}
+            onKeyPress={e => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addSkills(e.target.value);
+              }
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">

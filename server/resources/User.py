@@ -25,6 +25,7 @@ USER_LOGGED_OUT = "User {} successfully logged out."
 
 user_schema = UserSchema()
 skill_schema = SkillSchema()
+user_list_schema = UserSchema(many=True)
 
 class UserRegister(Resource):
     @classmethod
@@ -71,7 +72,7 @@ class User(Resource):
         if user and user.id == current_user:
             try:
                 #loading in form data through validation/clean by marshmallow
-                user.username = user_json["username"]
+                # user.username = user_json["username"]
                 user.location = user_json["location"]
                 user.yearsexp = user_json["yearsexp"]
                 user.description = user_json["description"]
@@ -167,6 +168,11 @@ class UserLogout(Resource):
         user_id = get_jwt_identity()
         BLACKLIST.add(jti)
         return {"message": USER_LOGGED_OUT.format(user_id)}, 200
+
+class UserList(Resource):
+    @classmethod
+    def get(cls):
+        return {"items": user_list_schema.dump(UserModel.find_all())}, 200
 
 class TokenRefresh(Resource):
     @classmethod

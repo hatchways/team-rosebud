@@ -82,7 +82,6 @@ function Profile(props) {
   const classes = useStyles();
 
   const [value, setValue] = useState(0);
-  const [data, setData] = useState([]);
   const [username, setUsername] = useState("");
   const [location, setLocation] = useState("");
   const [yearsexp, setYearsexp] = useState("");
@@ -116,8 +115,13 @@ function Profile(props) {
     setValue(newValue);
   }
 
+  function stopRefresh(e) {
+    setLocation(e.location);
+    setYearsexp(e.yearsexp);
+    setDescription(e.description);
+  }
+
   const handleDelete = skill => () => {
-    console.log(skill.name);
     fetch("/api/user/" + localStorage.getItem("user_id") + "/skill", {
       method: "PATCH",
       headers: {
@@ -130,6 +134,9 @@ function Profile(props) {
       })
     }).then(res => {
       if (res.status === 200) {
+        const valueToRemove = skill;
+        const filteredSkills = skills.filter (item => item !== valueToRemove);
+        setSkills(filteredSkills)
       }
     });
   };
@@ -154,7 +161,7 @@ function Profile(props) {
                 src={image}
                 alt="User Profile Picture"
               />
-              <EditModal />
+              <EditModal onChange={stopRefresh}/>
               <Box fontWeight="fontWeightBold" fontSize="h5.fontSize">
                 {username}
               </Box>

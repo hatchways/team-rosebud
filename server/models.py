@@ -63,6 +63,10 @@ class UserModel(db.Model):
     @classmethod
     def find_by_id(cls, _id: int) -> "UserModel":
         return cls.query.filter_by(id=_id).first()
+    
+    @classmethod
+    def find_all(cls) -> List["UserModel"]:
+        return cls.query.all()
 
     def save_to_db(self) -> None:
         db.session.add(self)
