@@ -61,9 +61,17 @@ function EditModal(props) {
         description: description
       })
     }).then(res => {
+      console.log(res);
+      console.log(res.status);
       if (res.status === 200) {
         //TODO check for successfull update in db
         //props.history.push("/profile");
+        const parent = {
+        location: location,
+        yearsexp: yearsexp,
+        description: description
+        };
+        props.onChange(parent)
       }
       //return res.json();
     });
