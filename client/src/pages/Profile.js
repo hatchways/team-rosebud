@@ -275,9 +275,12 @@ function Profile(props) {
             <Grid item style={{ width: "inherit" }}>
               {value === 0 && (
                 <TabContainer style={{ padding: "20px" }}>
-                  <Grid container direction="column" justify="flex-start">
-                    <AddProject />
-
+                  <AddProject />
+                  <Grid
+                    container
+                    direction="column-reverse"
+                    justify="flex-start"
+                  >
                     {projects.map(project => {
                       return (
                         <Card elevation={4} className={classes.projectCard}>
