@@ -1,11 +1,16 @@
 from io import StringIO, BytesIO
 import config
-from boto.s3.connection import S3Connection
-from boto.s3.key import Key as S3Key
+# from boto.s3.connection import S3Connection
+# from boto.s3.key import Key as S3Key
+import boto3
+import botocore
 from flask_restful import Resource, reqparse, abort
 from flask import request
 from werkzeug.datastructures import FileStorage
+import os
 
+aws_access_key = os.environ.get("AWS_ACCESS_KEY_ID")
+aws_secret_access_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
 
 def upload_s3(file, key_name, content_type, bucket_name):
     """Uploads a given StringIO object to S3. Closes the file after upload.
@@ -18,9 +23,20 @@ def upload_s3(file, key_name, content_type, bucket_name):
     bucket_name -- name of the bucket where file needs to be uploaded.
     """
     # create connection
-    conn = S3Connection(
-        config.aws_access_key, config.aws_secret_access_key)
+    s3 = boto3.resource('s3')
 
+    bucket = s3.Bucket('bucket_name')
+    exists = True
+    try:
+        s3.meta.client.head_bucket(Bucket='mybucket')
+    except botocore.exceptions.ClientError as e:
+        # If a client error is thrown, then check that it was a 404 error.
+        # If it was a 404 error, then the bucket does not exist.
+        error_code = e.response['Error']['Code']
+        if error_code == '404':
+            exists = False
+    
+    '''
     # upload the file after getting the right bucket
     bucket = conn.get_bucket(bucket_name)
     obj = S3Key(bucket)
@@ -33,7 +49,7 @@ def upload_s3(file, key_name, content_type, bucket_name):
     file.close()
 
     return obj.generate_url(expires_in=0, query_auth=False)
-
+    '''
 
 class FileStorageArgument(reqparse.Argument):
     """This argument class for flask-restful will be used in
@@ -69,7 +85,7 @@ class UploadImage(Resource):
         kname = image.filename.rsplit('.', 1)[0].lower()
 
         # create a file object of the image
-        image_file = BytesIO()
+        image_file = StringIO()
         image.save(image_file)
 
         # upload to s3

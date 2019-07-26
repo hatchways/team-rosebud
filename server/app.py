@@ -23,3 +23,4 @@ api.add_resource(ProjectList, "/user/<int:user_id>/projects")
 api.add_resource(SkillCreate, "/skill") #to remove
 api.add_resource(Skill, "/skill/<int:skill_id>")
 api.add_resource(SkillList, "/skills")
+api.add_resource(UploadImage, '/upload_image')
