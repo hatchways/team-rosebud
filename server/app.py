@@ -2,7 +2,7 @@ from flask import Flask, Blueprint
 from flask_restful import Api
 from resources.Hello import Hello
 from resources.User import UserRegister, User, UserLogout, TokenRefresh, UserLogin, UserSkill, UserList
-from resources.Project import ProjectCreate, Project
+from resources.Project import ProjectCreate, Project, ProjectList
 from resources.Skill import SkillCreate, Skill, SkillList
 from resources.Image import UploadImage, upload_s3, FileStorageArgument
 
@@ -19,6 +19,7 @@ api.add_resource(TokenRefresh, "/refresh")
 api.add_resource(UserLogout, "/logout")
 api.add_resource(ProjectCreate, "/user/<int:user_id>/project")
 api.add_resource(Project, "/project/<int:project_id>")
+api.add_resource(ProjectList, "/user/<int:user_id>/projects")
 api.add_resource(SkillCreate, "/skill") #to remove
 api.add_resource(Skill, "/skill/<int:skill_id>")
 api.add_resource(SkillList, "/skills")
