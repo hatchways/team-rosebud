@@ -196,6 +196,15 @@ function Discover() {
     newList = newList.filter(user => {
       return user.yearsexp >= values.yoe;
     });
+
+    chipData.map(chip => {
+      newList = newList.filter(user => {
+        const lc = user.skills.map(skill => skill.name.toLowerCase());
+        const filter = chip.label.toLowerCase();
+        return lc.includes(filter);
+      });
+    });
+
     setPartialFilter(newList);
     handleSearch(searchBy, newList);
     setExpanded(false);
@@ -210,7 +219,9 @@ function Discover() {
         const lc =
           user.username.toLowerCase() +
           user.location.toLowerCase() +
-          user.email.toLowerCase();
+          user.description.toLowerCase() +
+          user.email.toLowerCase() +
+          user.skills.map(skill => skill.name.toLowerCase());
         const filter = e.toLowerCase();
         return lc.includes(filter);
       });
@@ -225,6 +236,10 @@ function Discover() {
       location: "",
       yoe: ""
     }));
+    chipData.map(chip => {
+      popularSkills.push(chip.label);
+    });
+    setChipData([]);
     setDummy(!dummy);
   };
 
