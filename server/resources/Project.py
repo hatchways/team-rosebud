@@ -18,6 +18,7 @@ PROJECT_DELETED = "Project deleted."
 INVALID_CREDENTIALS = "Invalid credentials!"
 
 project_schema = ProjectSchema()
+project_list_schema = ProjectSchema(many=True)
 user_schema = UserSchema()
 
 class ProjectCreate(Resource):
@@ -56,10 +57,15 @@ class Project(Resource):
 
     @classmethod
     def delete(cls, project_id: int):
-        project = UserModel.find_by_id(user_id)
+        project = ProjectModel.find_by_id(project_id)
         if not project:
             return {"message": PROJECT_NOT_FOUND}, 404
 
         project.delete_from_db()
         return {"message": PROJECT_DELETED}, 200
 
+
+class ProjectList(Resource):
+    @classmethod
+    def get(cls, user_id: int):
+        return {"projects": project_list_schema.dump(ProjectModel.find_all_user(user_id))}, 200

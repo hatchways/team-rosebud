@@ -97,6 +97,10 @@ class ProjectModel(db.Model):
     def find_by_id(cls, _id: int) -> "ProjectModel":
         return cls.query.filter_by(id=_id).first()
 
+    @classmethod
+    def find_all_user(cls, user_id: int) -> List["ProjectModel"]:
+        return cls.query.filter_by(user_id=user_id).all()
+
     def save_to_db(self) -> None:
         db.session.add(self)
         db.session.commit()
