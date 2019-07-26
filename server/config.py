@@ -1,6 +1,17 @@
 import os
 
+#AWS API config
+aws_access_key = os.environ.get("AWS_ACCESS_KEY_ID")
+aws_secret_access_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
 # TEAM_NAME = os.environ['TEAM_NAME']
+
+#Image upload allowed config
+ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png']
+FILE_CONTENT_TYPES = {  # these will be used to set the content type of S3 object. It is binary by default.
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png'
+}
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 SQLALCHEMY_ECHO = False
