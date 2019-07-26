@@ -10,6 +10,10 @@ import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 import { grey } from "@material-ui/core/colors";
 import Typography from "@material-ui/core/Typography";
+import Card from "@material-ui/core/Card";
+import CardMedia from "@material-ui/core/CardMedia";
+
+import earth from "../TEST-images/earth.jpg";
 
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
@@ -69,8 +73,17 @@ const useStyles = makeStyles(theme => ({
     boxShadow: "none",
     margin: theme.spacing(2)
   },
+  projectCard: {
+    width: "25%",
+    height: "25%",
+    margin: theme.spacing(3)
+  },
   tab: {
     textTransform: "none"
+  },
+  media: {
+    height: 0,
+    paddingTop: "56.25%" // 16:9
   }
 }));
 
@@ -87,6 +100,7 @@ function Profile(props) {
   const [yearsexp, setYearsexp] = useState("");
   const [description, setDescription] = useState("");
   const [skills, setSkills] = useState([]);
+  const [projects, setProjects] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,7 +122,20 @@ function Profile(props) {
         });
     };
 
+    const fetchProjects = async () => {
+      fetch("/api/user/" + localStorage.getItem("user_id") + "/projects", {
+        method: "GET"
+      })
+        .then(res => {
+          return res.json();
+        })
+        .then(res => {
+          setProjects(res.projects);
+        });
+    };
+
     fetchData();
+    fetchProjects();
   }, []);
 
   function handleChange(event, newValue) {
@@ -135,8 +162,8 @@ function Profile(props) {
     }).then(res => {
       if (res.status === 200) {
         const valueToRemove = skill;
-        const filteredSkills = skills.filter (item => item !== valueToRemove);
-        setSkills(filteredSkills)
+        const filteredSkills = skills.filter(item => item !== valueToRemove);
+        setSkills(filteredSkills);
       }
     });
   };
@@ -161,7 +188,7 @@ function Profile(props) {
                 src={image}
                 alt="User Profile Picture"
               />
-              <EditModal onChange={stopRefresh}/>
+              <EditModal onChange={stopRefresh} />
               <Box fontWeight="fontWeightBold" fontSize="h5.fontSize">
                 {username}
               </Box>
@@ -245,11 +272,34 @@ function Profile(props) {
                 </Tabs>
               </AppBar>
             </Grid>
-            <Grid item>
+            <Grid item style={{ width: "inherit" }}>
               {value === 0 && (
-                <TabContainer>
-                  <Grid container justify="flex-start">
+                <TabContainer style={{ padding: "20px" }}>
+                  <Grid container direction="column" justify="flex-start">
                     <AddProject />
+
+                    {projects.map(project => {
+                      return (
+                        <Card elevation={4} className={classes.projectCard}>
+                          <CardMedia className={classes.media} image={earth} />
+                          <Grid
+                            container
+                            direction="column"
+                            justify="space-evenly"
+                            alignItems="flex-start"
+                            style={{ margin: "10px" }}
+                          >
+                            <Typography variant="h6">{project.name}</Typography>
+                            <Typography variant="caption">
+                              {project.githubLink}
+                            </Typography>
+                            <Typography variant="caption">
+                              {project.demoLink}
+                            </Typography>
+                          </Grid>
+                        </Card>
+                      );
+                    })}
                   </Grid>
                 </TabContainer>
               )}

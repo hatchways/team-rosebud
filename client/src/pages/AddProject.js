@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+
+import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
 import TextField from "@material-ui/core/TextField";
@@ -8,9 +10,19 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+const useStyles = makeStyles(theme => ({
+  button: {
+    marginLeft: theme.spacing(3)
+  }
+}));
+
 export default function AddProject() {
+  const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState("");
+  const [projectName, setProjectName] = useState("");
+  const [githubLink, setGithubLink] = useState("");
+  const [demoLink, setDemoLink] = useState("");
 
   function handleClickOpen() {
     setOpen(true);
@@ -20,15 +32,37 @@ export default function AddProject() {
     setOpen(false);
   }
 
+  function handleSubmit() {
+    fetch("/api/user/" + localStorage.getItem("user_id") + "/project", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("access_token")
+      },
+      body: JSON.stringify({
+        name: projectName,
+        githubLink: githubLink,
+        user_id: localStorage.getItem("user_id"),
+        demoLink: demoLink
+      })
+    }).then(res => {
+      if (res.status === 200) setOpen(false);
+    });
+  }
+
   function openImage(e) {
     setImage(URL.createObjectURL(e));
   }
 
   return (
     <div>
-      <Icon fontSize="small" onClick={handleClickOpen}>
-        settings
-      </Icon>
+      <Button
+        className={classes.button}
+        variant="outlined"
+        onClick={handleClickOpen}
+      >
+        Add New Project
+      </Button>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -48,6 +82,7 @@ export default function AddProject() {
             id="name"
             label="Name of the project"
             name="name"
+            onChange={e => setProjectName(e.target.value)}
           />
           <TextField
             fullWidth
@@ -56,6 +91,7 @@ export default function AddProject() {
             id="demo"
             label="Demo Link"
             name="demo"
+            onChange={e => setDemoLink(e.target.value)}
           />
           <TextField
             fullWidth
@@ -64,6 +100,7 @@ export default function AddProject() {
             id="gitHub"
             label="GitHub Link"
             name="gitHub"
+            onChange={e => setGithubLink(e.target.value)}
           />
           <div>
             <img src={image} alt="" style={{ maxWidth: "150px" }} />
@@ -86,7 +123,7 @@ export default function AddProject() {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleSubmit} color="primary">
             Submit
           </Button>
         </DialogActions>
