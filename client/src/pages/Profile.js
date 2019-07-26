@@ -116,6 +116,12 @@ function Profile(props) {
     setValue(newValue);
   }
 
+  function stopRefresh(e) {
+    setLocation(e.location);
+    setYearsexp(e.yearsexp);
+    setDescription(e.description);
+  }
+
   const handleDelete = skill => () => {
     // console.log(skill.name);
     fetch("/api/user/" + localStorage.getItem("user_id") + "/skill", {
@@ -157,7 +163,7 @@ function Profile(props) {
                 src={image}
                 alt="User Profile Picture"
               />
-              <EditModal />
+              <EditModal onChange={stopRefresh}/>
               <Box fontWeight="fontWeightBold" fontSize="h5.fontSize">
                 {username}
               </Box>
