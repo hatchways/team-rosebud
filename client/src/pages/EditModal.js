@@ -158,7 +158,7 @@ function EditModal(props) {
                 <InputAdornment position="end">
                   <Button
                     variant="contained"
-                    onClick={addSkills}
+                    onClick={e => addSkills(skill)}
                     color="primary"
                   >
                     Add
