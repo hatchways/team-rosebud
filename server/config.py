@@ -1,8 +1,9 @@
 import os
 
 #AWS API config
-aws_access_key = os.environ.get("AWS_ACCESS_KEY_ID")
-aws_secret_access_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
+S3_KEY = os.environ.get('AWS_ACCESS_KEY_ID')
+S3_SECRET = os.environ.get('AWS_SECRET_ACCESS_KEY')
+S3_BUCKET = 'rosebud-hatchways'
 # TEAM_NAME = os.environ['TEAM_NAME']
 
 #Image upload allowed config

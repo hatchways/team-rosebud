@@ -6,6 +6,7 @@ from resources.Project import ProjectCreate, Project, ProjectList
 from resources.Skill import SkillCreate, Skill, SkillList
 from resources.Image import UploadImage, upload_s3, FileStorageArgument
 
+
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 

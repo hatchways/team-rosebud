@@ -1,55 +1,64 @@
-from io import StringIO, BytesIO
-import config
-# from boto.s3.connection import S3Connection
-# from boto.s3.key import Key as S3Key
-import boto3
-import botocore
+from flask import session, request
+from io import BytesIO
 from flask_restful import Resource, reqparse, abort
-from flask import request
+import boto3
+from config import S3_KEY, S3_SECRET, S3_BUCKET, ALLOWED_EXTENSIONS, FILE_CONTENT_TYPES
+from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
-import os
+from flask_jwt_extended import (
+    jwt_refresh_token_required,
+    get_jwt_identity,
+    jwt_required,
+    get_raw_jwt,
+    fresh_jwt_required
+)
 
-aws_access_key = os.environ.get("AWS_ACCESS_KEY_ID")
-aws_secret_access_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
+x = 
+y = 
+
+def create_presigned_url(bucket_name, object_name, expiration=3600):
+    """Generate a presigned URL to share an S3 object
+
+    :param bucket_name: string
+    :param object_name: string
+    :param expiration: Time in seconds for the presigned URL to remain valid
+    :return: Presigned URL as string. If error, returns None.
+    """
+
+    # Generate a presigned URL for the S3 object
+    s3_client = boto3.client('s3',
+                             region_name='ca-central-1',
+                             endpoint_url='https://s3.ca-central-1.amazonaws.com',
+                             aws_access_key_id = x,
+                             aws_secret_access_key = y)
+    try:
+        response = s3_client.generate_presigned_url('get_object',
+                                                    Params={'Bucket': bucket_name,
+                                                            'Key': object_name},
+                                                    ExpiresIn=expiration)
+    except ClientError as e:
+        logging.error(e)
+        return None
+
+    # The response contains the presigned URL
+    return response
+
 
 def upload_s3(file, key_name, content_type, bucket_name):
-    """Uploads a given StringIO object to S3. Closes the file after upload.
-    Returns the URL for the object uploaded.
-    Note: The acl for the file is set as 'public-acl' for the file uploaded.
-    Keyword Arguments:
-    file -- StringIO object which needs to be uploaded.
-    key_name -- key name to be kept in S3.
-    content_type -- content type that needs to be set for the S3 object.
-    bucket_name -- name of the bucket where file needs to be uploaded.
-    """
-    # create connection
-    s3 = boto3.resource('s3')
+        client = boto3.client('s3',
+                              region_name='ca-central-1',
+                              endpoint_url='https://s3.ca-central-1.amazonaws.com',
+                              aws_access_key_id = x,
+                              aws_secret_access_key =y)
 
-    bucket = s3.Bucket('bucket_name')
-    exists = True
-    try:
-        s3.meta.client.head_bucket(Bucket='mybucket')
-    except botocore.exceptions.ClientError as e:
-        # If a client error is thrown, then check that it was a 404 error.
-        # If it was a 404 error, then the bucket does not exist.
-        error_code = e.response['Error']['Code']
-        if error_code == '404':
-            exists = False
-    
-    '''
-    # upload the file after getting the right bucket
-    bucket = conn.get_bucket(bucket_name)
-    obj = S3Key(bucket)
-    obj.name = key_name
-    obj.content_type = content_type
-    obj.set_contents_from_string(file.getvalue())
-    obj.set_acl('public-read')
+        client.put_object(Body=file,
+                          Bucket=bucket_name,
+                          Key=key_name,
+                          ContentType=content_type)
 
-    # close stringio object
-    file.close()
+        presigned_url = create_presigned_url(bucket_name,key_name)
+        return {'message': 'image uploaded', 'key_name':key_name, 'presigned_url':presigned_url}, 200
 
-    return obj.generate_url(expires_in=0, query_auth=False)
-    '''
 
 class FileStorageArgument(reqparse.Argument):
     """This argument class for flask-restful will be used in
@@ -68,30 +77,29 @@ class FileStorageArgument(reqparse.Argument):
 
 
 class UploadImage(Resource):
-
     put_parser = reqparse.RequestParser(argument_class=FileStorageArgument)
     put_parser.add_argument('image', required=True,
                             type=FileStorage, location='files')
-
     def put(self):
+
         args = self.put_parser.parse_args()
         image = args['image']
 
-        # check img extension
+        # check extension
         extension = image.filename.rsplit('.', 1)[1].lower()
-        if '.' in image.filename and not extension in config.ALLOWED_EXTENSIONS:
+        if '.' in image.filename and not extension in ALLOWED_EXTENSIONS:
             abort(400, message="File extension is not one of our supported types.")
 
-        kname = image.filename.rsplit('.', 1)[0].lower()
+        name = image.filename.rsplit('.', 1)[0].lower()
 
-        # create a file object of the image
-        image_file = StringIO()
-        image.save(image_file)
+        image_file = image
+
 
         # upload to s3
-        key_name = '{0}.{1}'.format(kname, extension)
-        content_type = config.FILE_CONTENT_TYPES[extension]
-        bucket_name = 'rosebud-hatchways'
-        img_url = upload_s3(image_file, key_name, content_type, bucket_name)
+        key_name = '{0}.{1}'.format(name, extension)
+        content_type = FILE_CONTENT_TYPES[extension]
+        bucket_name = S3_BUCKET
+        output = upload_s3(image_file, key_name, content_type, bucket_name)
+        
 
-        return {'img_url': img_url}
+        return output
