@@ -96,6 +96,12 @@ function Profile(props) {
   const { params } = props.match;
   console.log(params);
 
+  var user = false;
+
+  if (localStorage.getItem('user_id')=== params.id) {
+    user = true;
+  };
+
   const classes = useStyles();
 
   const [value, setValue] = useState(0);
@@ -201,12 +207,17 @@ function Profile(props) {
               </Box>
 
               <div>
-                <Button variant="contained" className={classes.connectButton}>
-                  Connect
-                </Button>
-                <Button variant="contained" className={classes.button}>
-                  Message
-                </Button>
+                {user=== false ? 
+                  <div>
+                  <Button variant="contained" className={classes.connectButton}>
+                    Connect
+                  </Button>
+                  <Button variant="contained" className={classes.button}>
+                    Message
+                  </Button>
+                  </div>
+                  : <p></p>
+                }
               </div>
             </div>
           </Grid>
