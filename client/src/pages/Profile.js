@@ -92,6 +92,16 @@ function TabContainer(props) {
 }
 
 function Profile(props) {
+  
+  const { params } = props.match;
+  console.log(params);
+
+  var user = false;
+
+  if (localStorage.getItem('user_id')=== params.id) {
+    user = true;
+  };
+
   const classes = useStyles();
 
   const [value, setValue] = useState(0);
@@ -104,7 +114,7 @@ function Profile(props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      fetch("/api/user/" + localStorage.getItem("user_id"), {
+      fetch("/api/user/" + params.id, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -123,7 +133,7 @@ function Profile(props) {
     };
 
     const fetchProjects = async () => {
-      fetch("/api/user/" + localStorage.getItem("user_id") + "/projects", {
+      fetch("/api/user/" + params.id + "/projects", {
         method: "GET"
       })
         .then(res => {
@@ -149,7 +159,7 @@ function Profile(props) {
   }
 
   const handleDelete = skill => () => {
-    fetch("/api/user/" + localStorage.getItem("user_id") + "/skill", {
+    fetch("/api/user/" + params.id + "/skill", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -188,21 +198,30 @@ function Profile(props) {
                 src={image}
                 alt="User Profile Picture"
               />
-              <EditModal onChange={stopRefresh} />
+              {user=== true ? 
+                  <div>
+                    <EditModal onChange={stopRefresh} />
+                  </div>
+                  : <p></p>
+                }
               <Box fontWeight="fontWeightBold" fontSize="h5.fontSize">
                 {username}
               </Box>
               <Box fontWeight="fontWeightRegular" fontSize="fontSize">
                 {location}
               </Box>
-
               <div>
-                <Button variant="contained" className={classes.connectButton}>
-                  Connect
-                </Button>
-                <Button variant="contained" className={classes.button}>
-                  Message
-                </Button>
+                {user=== false ? 
+                  <div>
+                  <Button variant="contained" className={classes.connectButton}>
+                    Connect
+                  </Button>
+                  <Button variant="contained" className={classes.button}>
+                    Message
+                  </Button>
+                  </div>
+                  : <p></p>
+                }
               </div>
             </div>
           </Grid>

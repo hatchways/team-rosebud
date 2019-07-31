@@ -103,9 +103,14 @@ function EditModal(props) {
     setSkill("");
   };
 
+  const divStyle = {
+    marginBottom: '10px',
+  };
+
+
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+      <Button variant="outlined" color="primary" onClick={handleClickOpen} style= {divStyle}>
         Edit
       </Button>
       <Dialog
