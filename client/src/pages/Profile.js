@@ -210,7 +210,6 @@ function Profile(props) {
               <Box fontWeight="fontWeightRegular" fontSize="fontSize">
                 {location}
               </Box>
-
               <div>
                 {user=== false ? 
                   <div>
