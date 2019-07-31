@@ -92,6 +92,10 @@ function TabContainer(props) {
 }
 
 function Profile(props) {
+  
+  const { params } = props.match;
+  console.log(params);
+
   const classes = useStyles();
 
   const [value, setValue] = useState(0);
@@ -104,7 +108,7 @@ function Profile(props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      fetch("/api/user/" + localStorage.getItem("user_id"), {
+      fetch("/api/user/" + params.id, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -123,7 +127,7 @@ function Profile(props) {
     };
 
     const fetchProjects = async () => {
-      fetch("/api/user/" + localStorage.getItem("user_id") + "/projects", {
+      fetch("/api/user/" + params.id + "/projects", {
         method: "GET"
       })
         .then(res => {
@@ -149,7 +153,7 @@ function Profile(props) {
   }
 
   const handleDelete = skill => () => {
-    fetch("/api/user/" + localStorage.getItem("user_id") + "/skill", {
+    fetch("/api/user/" + params.id + "/skill", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
