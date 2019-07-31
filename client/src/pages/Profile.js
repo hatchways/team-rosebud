@@ -198,7 +198,12 @@ function Profile(props) {
                 src={image}
                 alt="User Profile Picture"
               />
-              <EditModal onChange={stopRefresh} />
+              {user=== true ? 
+                  <div>
+                    <EditModal onChange={stopRefresh} />
+                  </div>
+                  : <p></p>
+                }
               <Box fontWeight="fontWeightBold" fontSize="h5.fontSize">
                 {username}
               </Box>
