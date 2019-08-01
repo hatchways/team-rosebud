@@ -8,7 +8,7 @@ connection_schema = ConnectionSchema()
 
 class Connections(Resource):
     @classmethod
-    def get(cls):
+    def put(cls):
         try:
             connection = connection_schema.load(request.get_json())
         except ValidationError as err:
