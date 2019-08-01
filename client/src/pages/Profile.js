@@ -26,6 +26,11 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import image from "../TEST-images/apple-touch-icon.png";
 import AddProject from "./AddProject";
+import CalendarHeatmap from 'react-calendar-heatmap';
+import 'react-calendar-heatmap/dist/styles.css';
+import './Profile.css';
+
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -91,6 +96,7 @@ function TabContainer(props) {
   return <Typography style={{ padding: 10 }}>{props.children}</Typography>;
 }
 
+
 function Profile(props) {
   
   const { params } = props.match;
@@ -111,6 +117,8 @@ function Profile(props) {
   const [description, setDescription] = useState("");
   const [skills, setSkills] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [github, setGithub] = useState();
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,6 +139,18 @@ function Profile(props) {
           setSkills(res.skills);
         });
     };
+    
+    const fetchGitHub = async() => {
+      fetch("https://github-contributions-api.now.sh/v1/sjain93", {
+        method: "GET"
+      })
+        .then(res => {
+          return res.json();
+        })
+        .then(res => {
+          setGithub(res.contributions);
+        })
+      };
 
     const fetchProjects = async () => {
       fetch("/api/user/" + params.id + "/projects", {
@@ -146,10 +166,20 @@ function Profile(props) {
 
     fetchData();
     fetchProjects();
+    fetchGitHub();
   }, []);
 
   function handleChange(event, newValue) {
     setValue(newValue);
+  }
+
+  function newVal(github) {
+    var out = [];
+    github.forEach(element => {
+    const picked = (({date, count}) => ({date, count}))(element);
+    out.push(picked);
+    });
+    return out;
   }
 
   function stopRefresh(e) {
@@ -284,10 +314,7 @@ function Profile(props) {
                 <Tabs value={value} onChange={handleChange} variant="fullWidth">
                   <Tab className={classes.tab} label="Projects" />
                   <Tab className={classes.tab} label="GitHub Contributions" />
-                  <Tab
-                    className={classes.tab}
-                    label="Education and courseworks"
-                  />
+                  <Tab className={classes.tab} label="Education and courseworks"/>
                 </Tabs>
               </AppBar>
             </Grid>
@@ -330,7 +357,20 @@ function Profile(props) {
                   </Grid>
                 </TabContainer>
               )}
-              {value === 1 && <TabContainer>Item Two</TabContainer>}
+              {value === 1 && (<TabContainer>
+                  Contributions for sjain93
+                  <CalendarHeatmap
+                        startDate={new Date('2019-01-01')}
+                        endDate={new Date('2019-08-01')}
+                        values={newVal(github)}
+                        classForValue={(val) => {
+                          if (!val) {
+                            return 'color-empty';
+                          }
+                          return `color-scale-${val.count}`;
+                        }}
+                        />
+              </TabContainer>)}
               {value === 2 && <TabContainer>Item Three</TabContainer>}
             </Grid>
           </Grid>
@@ -341,3 +381,4 @@ function Profile(props) {
 }
 
 export default withRouter(Profile);
+
