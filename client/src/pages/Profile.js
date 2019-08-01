@@ -12,6 +12,7 @@ import { grey } from "@material-ui/core/colors";
 import Typography from "@material-ui/core/Typography";
 import Card from "@material-ui/core/Card";
 import CardMedia from "@material-ui/core/CardMedia";
+import DeleteIcon from "@material-ui/icons/Cancel";
 
 import earth from "../TEST-images/earth.jpg";
 
@@ -284,6 +285,7 @@ function Profile(props) {
                     label={data.name}
                     className={classes.chip}
                     onDelete={handleDelete(data)}
+                    deleteIcon={user === false ? <p /> : <DeleteIcon />}
                   />
                 );
               })}
