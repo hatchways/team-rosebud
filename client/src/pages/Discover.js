@@ -130,7 +130,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Discover() {
+function Discover(props) {
   const classes = useStyles();
   const [dummy, setDummy] = useState(true);
   const [expanded, setExpanded] = React.useState(false);
@@ -429,7 +429,11 @@ function Discover() {
           >
             {filteredUsers.map(data => {
               return (
-                <Card elevation={4} className={classes.usersCard}>
+                <Card
+                  elevation={4}
+                  className={classes.usersCard}
+                  onClick={e => props.history.push("/profile/" + data.id)}
+                >
                   <Grid
                     container
                     direction="column"
