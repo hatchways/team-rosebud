@@ -76,7 +76,7 @@ function Login(props) {
           if (status === 200) {
             localStorage.setItem("access_token", res.access_token);
             localStorage.setItem("user_id", res.user_id);
-            props.history.push("/profile");
+            props.history.push("/profile/"+ localStorage.getItem("user_id"));
           } else setMessage(res.message);
         });
     }

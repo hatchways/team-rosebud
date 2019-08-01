@@ -294,7 +294,12 @@ function Profile(props) {
             <Grid item style={{ width: "inherit" }}>
               {value === 0 && (
                 <TabContainer style={{ padding: "20px" }}>
-                  <AddProject />
+                  {user=== true ? 
+                    <div>
+                      <AddProject />
+                    </div>
+                    : <p></p>
+                      }
                   <Grid
                     container
                     direction="column-reverse"
