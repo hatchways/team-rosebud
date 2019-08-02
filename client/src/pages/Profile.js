@@ -358,7 +358,7 @@ function Profile(props) {
                 </TabContainer>
               )}
               {value === 1 && (<TabContainer>
-                  Contributions for sjain93
+                  Contributions for this user:
                   <CalendarHeatmap
                         startDate={new Date('2019-01-01')}
                         endDate={new Date('2019-08-01')}
