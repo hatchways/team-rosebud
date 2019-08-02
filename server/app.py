@@ -7,6 +7,7 @@ from resources.Skill import SkillCreate, Skill, SkillList
 from resources.Image import UploadImage, upload_s3, FileStorageArgument
 from resources.Connections import Connections
 
+
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
@@ -24,5 +25,6 @@ api.add_resource(ProjectList, "/user/<int:user_id>/projects")
 api.add_resource(SkillCreate, "/skill")  # to remove
 api.add_resource(Skill, "/skill/<int:skill_id>")
 api.add_resource(SkillList, "/skills")
+api.add_resource(UploadImage, '/upload_image/<int:project_id>')
 #api.add_resource(Connections, "/connections")
 api.add_resource(Connections, "/connect")
