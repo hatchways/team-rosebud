@@ -17,8 +17,8 @@ from flask_jwt_extended import (
 
 project_schema = ProjectSchema()
 
-x = 
-y = 
+x = ''
+y = ''
 
 def create_presigned_url(bucket_name, object_name, expiration=3600):
     """Generate a presigned URL to share an S3 object

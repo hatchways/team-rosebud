@@ -6,6 +6,10 @@ from resources.Project import ProjectCreate, Project, ProjectList
 from resources.Skill import SkillCreate, Skill, SkillList
 from resources.Image import UploadImage, upload_s3, FileStorageArgument
 from resources.Connections import Connections
+from resources.github_login import GithubLogin
+from dotenv import load_dotenv
+load_dotenv(".env")
+from oa import oauth
 
 
 api_bp = Blueprint('api', __name__)
@@ -28,3 +32,4 @@ api.add_resource(SkillList, "/skills")
 api.add_resource(UploadImage, '/upload_image/<int:project_id>')
 #api.add_resource(Connections, "/connections")
 api.add_resource(Connections, "/connect")
+api.add_resource(GithubLogin, "/login/github")
