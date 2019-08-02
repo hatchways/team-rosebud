@@ -1,8 +1,10 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
+from dotenv import load_dotenv
 
 
 def create_app(config_filename):
+    load_dotenv(".env")
     app = Flask(__name__)
     app.config.from_object(config_filename)
     app.secret_key = "sanchit"

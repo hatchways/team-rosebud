@@ -1,10 +1,12 @@
 from flask import session, request
 from io import BytesIO
+import os
 from flask_restful import Resource, reqparse, abort
 import boto3
 from config import S3_KEY, S3_SECRET, S3_BUCKET, ALLOWED_EXTENSIONS, FILE_CONTENT_TYPES
 from werkzeug import secure_filename
 from werkzeug.datastructures import FileStorage
+from models import db, ma, ProjectModel, ProjectSchema
 from flask_jwt_extended import (
     jwt_refresh_token_required,
     get_jwt_identity,
@@ -12,6 +14,8 @@ from flask_jwt_extended import (
     get_raw_jwt,
     fresh_jwt_required
 )
+
+project_schema = ProjectSchema()
 
 x = 
 y = 
@@ -26,6 +30,7 @@ def create_presigned_url(bucket_name, object_name, expiration=3600):
     """
 
     # Generate a presigned URL for the S3 object
+   
     s3_client = boto3.client('s3',
                              region_name='ca-central-1',
                              endpoint_url='https://s3.ca-central-1.amazonaws.com',
@@ -80,7 +85,8 @@ class UploadImage(Resource):
     put_parser = reqparse.RequestParser(argument_class=FileStorageArgument)
     put_parser.add_argument('image', required=True,
                             type=FileStorage, location='files')
-    def put(self):
+
+    def put(self, project_id: int):
 
         args = self.put_parser.parse_args()
         image = args['image']
@@ -101,5 +107,11 @@ class UploadImage(Resource):
         bucket_name = S3_BUCKET
         output = upload_s3(image_file, key_name, content_type, bucket_name)
         
+        project = ProjectModel.find_by_id(project_id)
+        if not project:
+            return {"message": PROJECT_NOT_FOUND}, 404
+        
+        project.image = key_name
+        project.save_to_db()
 
         return output
