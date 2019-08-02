@@ -9,8 +9,34 @@ db = SQLAlchemy()
 ma = Marshmallow()
 
 users_skills = db.Table('users_skills',
-                            db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-                            db.Column('skill_id', db.Integer, db.ForeignKey('skills.id')))
+                        db.Column('user_id', db.Integer,
+                                  db.ForeignKey('users.id')),
+                        db.Column('skill_id', db.Integer, db.ForeignKey('skills.id')))
+
+
+class ConnectionModel(db.Model):
+    __tablename__ = 'connections'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        "users.id", ondelete='CASCADE'), nullable=False)
+    connected_to = db.Column(
+        db.Integer, db.ForeignKey("users.id", ondelete='CASCADE'), nullable=False)
+
+    @classmethod
+    def find_by_user_id(cls, _id: int) -> "ConnectionModel":
+        return cls.query.filter_by(user_id=_id).first()
+
+    @classmethod
+    def find_by_connection(cls, _id: int, _to: int) -> "ConnectionModel":
+        return cls.query.filter_by(user_id=_id, connected_to=_to).first()
+
+    def save_to_db(self) -> None:
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self) -> None:
+        db.session.delete(self)
+        db.session.commit()
 
 
 class SkillModel(db.Model):
@@ -25,7 +51,7 @@ class SkillModel(db.Model):
     @classmethod
     def find_by_id(cls, _id: int) -> "SkillModel":
         return cls.query.filter_by(id=_id).first()
-    
+
     @classmethod
     def find_all(cls) -> List["SkillModel"]:
         return cls.query.all()
@@ -38,6 +64,7 @@ class SkillModel(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+
 class UserModel(db.Model):
     __tablename__ = "users"
 
@@ -47,15 +74,16 @@ class UserModel(db.Model):
     email = db.Column(db.String(120), nullable=False, unique=True)
     location = db.Column(db.String(120))
     yearsexp = db.Column(db.Integer)
-    description =  db.Column(db.String(256))
+    description = db.Column(db.String(256))
 
     projects = db.relationship("ProjectModel", back_populates="user")
-    skills = db.relationship('SkillModel', secondary="users_skills", backref='users', lazy="joined")
+    skills = db.relationship(
+        'SkillModel', secondary="users_skills", backref='users', lazy="joined")
 
     @classmethod
     def find_by_username(cls, username: str) -> "UserModel":
         return cls.query.filter_by(username=username).first()
-    
+
     @classmethod
     def find_by_email(cls, email: str) -> "UserModel":
         return cls.query.filter_by(email=email).first()
@@ -63,7 +91,7 @@ class UserModel(db.Model):
     @classmethod
     def find_by_id(cls, _id: int) -> "UserModel":
         return cls.query.filter_by(id=_id).first()
-    
+
     @classmethod
     def find_all(cls) -> List["UserModel"]:
         return cls.query.all()
@@ -116,12 +144,18 @@ class ProjectSchema(ma.ModelSchema):
         include_fk = True
 
 
+class ConnectionSchema(ma.ModelSchema):
+    class Meta:
+        model = ConnectionModel
+        include_fk = True
+
+
 class SkillSchema(ma.ModelSchema):
     class Meta:
         model = SkillModel
         load_only = ("users",)
         include_fk = True
-    
+
 
 class UserSchema(ma.ModelSchema):
 
@@ -133,9 +167,3 @@ class UserSchema(ma.ModelSchema):
 
     projects = ma.Nested(ProjectSchema, many=True)
     skills = ma.Nested(SkillSchema, many=True)
-
-
-    
-
-
-

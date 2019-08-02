@@ -103,9 +103,14 @@ function EditModal(props) {
     setSkill("");
   };
 
+  const divStyle = {
+    marginBottom: '10px',
+  };
+
+
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+      <Button variant="outlined" color="primary" onClick={handleClickOpen} style= {divStyle}>
         Edit
       </Button>
       <Dialog
@@ -158,7 +163,7 @@ function EditModal(props) {
                 <InputAdornment position="end">
                   <Button
                     variant="contained"
-                    onClick={addSkills}
+                    onClick={e => addSkills(skill)}
                     color="primary"
                   >
                     Add

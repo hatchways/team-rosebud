@@ -14,7 +14,7 @@ function App() {
     <MuiThemeProvider theme={theme}>
       <BrowserRouter>
         <Route path="/" component={LandingPage} />
-        <Route path="/profile" component={ProfilePage} />
+        <Route path="/profile/:id" component={ProfilePage} />
         <Route path="/discover" component={DiscoverPage} />
       </BrowserRouter>
     </MuiThemeProvider>
