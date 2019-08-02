@@ -1,12 +1,14 @@
 import os
 
-#AWS API config
+# AWS API config
 S3_KEY = os.environ.get('AWS_ACCESS_KEY_ID')
 S3_SECRET = os.environ.get('AWS_SECRET_ACCESS_KEY')
 S3_BUCKET = 'rosebud-hatchways'
+x = os.environ['x']
+y = os.environ['y']
 # TEAM_NAME = os.environ['TEAM_NAME']
 
-#Image upload allowed config
+# Image upload allowed config
 ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png']
 FILE_CONTENT_TYPES = {  # these will be used to set the content type of S3 object. It is binary by default.
     'jpg': 'image/jpeg',

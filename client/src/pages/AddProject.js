@@ -51,21 +51,14 @@ export default function AddProject() {
       })
       .then(res => {
         let form = new FormData();
-        form.append(
-          "image",
-          "/C:/Users/keval/OneDrive/Documents/GitHub/team-rosebud/client/src/TEST-images/ceres.jpg"
-        );
+        form.append("image", file[0]);
 
         fetch("/api/upload_image/" + res.id, {
           method: "POST",
           body: form
-        })
-          .then(res => {
-            return res.json();
-          })
-          .then(res => {
-            console.log(res);
-          });
+        }).then(res => {
+          if (res.status === 200) setOpen(false);
+        });
       });
   }
 

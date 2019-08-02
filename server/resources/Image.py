@@ -1,6 +1,7 @@
 from flask import session, request
 from io import BytesIO
 import os
+from config import x, y
 from flask_restful import Resource, reqparse, abort
 import boto3
 from config import S3_KEY, S3_SECRET, S3_BUCKET, ALLOWED_EXTENSIONS, FILE_CONTENT_TYPES
@@ -16,9 +17,6 @@ from flask_jwt_extended import (
 )
 
 project_schema = ProjectSchema()
-
-x = ''
-y = ""
 
 
 def create_presigned_url(bucket_name, object_name, expiration=3600):
