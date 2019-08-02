@@ -21,6 +21,7 @@ project_schema = ProjectSchema()
 project_list_schema = ProjectSchema(many=True)
 user_schema = UserSchema()
 
+
 class ProjectCreate(Resource):
     @classmethod
     @jwt_required
@@ -34,17 +35,18 @@ class ProjectCreate(Resource):
                 project = project_schema.load(request.get_json())
             except ValidationError as err:
                 return err.messages, 400
-            
+
             if project in user.projects:
                 return {"message": "Project exists"}, 400
             else:
                 user.projects.append(project)
-            
+
             project.save_to_db()
             user.save_to_db()
-            return user_schema.dump(user), 200
+            return project_schema.dump(project), 200
         else:
             return{"message": INVALID_CREDENTIALS}, 401
+
 
 class Project(Resource):
     @classmethod

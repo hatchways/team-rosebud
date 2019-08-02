@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import Icon from "@material-ui/core/Icon";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -19,10 +18,11 @@ const useStyles = makeStyles(theme => ({
 export default function AddProject() {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState();
   const [projectName, setProjectName] = useState("");
   const [githubLink, setGithubLink] = useState("");
   const [demoLink, setDemoLink] = useState("");
+  const [file, setFile] = useState();
 
   function handleClickOpen() {
     setOpen(true);
@@ -45,13 +45,33 @@ export default function AddProject() {
         user_id: localStorage.getItem("user_id"),
         demoLink: demoLink
       })
-    }).then(res => {
-      if (res.status === 200) setOpen(false);
-    });
+    })
+      .then(res => {
+        if (res.status === 200) return res.json();
+      })
+      .then(res => {
+        let form = new FormData();
+        form.append(
+          "image",
+          "/C:/Users/keval/OneDrive/Documents/GitHub/team-rosebud/client/src/TEST-images/ceres.jpg"
+        );
+
+        fetch("/api/upload_image/" + res.id, {
+          method: "POST",
+          body: form
+        })
+          .then(res => {
+            return res.json();
+          })
+          .then(res => {
+            console.log(res);
+          });
+      });
   }
 
   function openImage(e) {
-    setImage(URL.createObjectURL(e));
+    setImage(URL.createObjectURL(e[0]));
+    setFile(e);
   }
 
   return (
@@ -111,7 +131,7 @@ export default function AddProject() {
             id="raised-button-file"
             multiple
             type="file"
-            onChange={e => openImage(e.target.files[0])}
+            onChange={e => openImage(e.target.files)}
           />
           <label htmlFor="raised-button-file">
             <Button variant="raised" component="span">
