@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
-
+from oa import oauth
 
 def create_app(config_filename):
     load_dotenv(".env")
