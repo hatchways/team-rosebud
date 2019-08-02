@@ -12,6 +12,7 @@ import { grey } from "@material-ui/core/colors";
 import Typography from "@material-ui/core/Typography";
 import Card from "@material-ui/core/Card";
 import CardMedia from "@material-ui/core/CardMedia";
+import DeleteIcon from "@material-ui/icons/Cancel";
 
 import earth from "../TEST-images/earth.jpg";
 
@@ -98,15 +99,13 @@ function TabContainer(props) {
 
 
 function Profile(props) {
-  
   const { params } = props.match;
-  console.log(params);
 
   var user = false;
 
-  if (localStorage.getItem('user_id')=== params.id) {
+  if (localStorage.getItem("user_id") === params.id) {
     user = true;
-  };
+  }
 
   const classes = useStyles();
 
@@ -118,6 +117,9 @@ function Profile(props) {
   const [skills, setSkills] = useState([]);
   const [projects, setProjects] = useState([]);
   const [github, setGithub] = useState();
+
+
+  const [connected, setConnected] = useState("");
 
 
   useEffect(() => {
@@ -164,10 +166,28 @@ function Profile(props) {
         });
     };
 
+    const checkConnection = async () => {
+      fetch("/api/connect", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          user_id: localStorage.getItem("user_id"),
+          connected_to: params.id
+        })
+      }).then(res => {
+        if (res.status === 400) setConnected(false);
+        else setConnected(true);
+      });
+    };
+
     fetchData();
     fetchProjects();
     fetchGitHub();
-  }, []);
+    checkConnection();
+   }, [params.id]);
+
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -208,6 +228,21 @@ function Profile(props) {
     });
   };
 
+  function handleConnection() {
+    fetch("/api/connect", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_id: localStorage.getItem("user_id"),
+        connected_to: params.id
+      })
+    }).then(res => {
+      if (res.status === 200) setConnected(true);
+    });
+  }
+
   return (
     <Grid container className={classes.root} justify="space-between">
       <Navigation />
@@ -228,12 +263,13 @@ function Profile(props) {
                 src={image}
                 alt="User Profile Picture"
               />
-              {user=== true ? 
-                  <div>
-                    <EditModal onChange={stopRefresh} />
-                  </div>
-                  : <p></p>
-                }
+              {user === true ? (
+                <div>
+                  <EditModal onChange={stopRefresh} />
+                </div>
+              ) : (
+                <p />
+              )}
               <Box fontWeight="fontWeightBold" fontSize="h5.fontSize">
                 {username}
               </Box>
@@ -241,17 +277,27 @@ function Profile(props) {
                 {location}
               </Box>
               <div>
-                {user=== false ? 
+                {user === false ? (
                   <div>
-                  <Button variant="contained" className={classes.connectButton}>
-                    Connect
-                  </Button>
-                  <Button variant="contained" className={classes.button}>
-                    Message
-                  </Button>
+                    {connected === false ? (
+                      <Button
+                        variant="contained"
+                        className={classes.connectButton}
+                        onClick={handleConnection}
+                      >
+                        Connect
+                      </Button>
+                    ) : (
+                      <p />
+                    )}
+
+                    <Button variant="contained" className={classes.button}>
+                      Message
+                    </Button>
                   </div>
-                  : <p></p>
-                }
+                ) : (
+                  <p />
+                )}
               </div>
             </div>
           </Grid>
@@ -272,6 +318,7 @@ function Profile(props) {
                     label={data.name}
                     className={classes.chip}
                     onDelete={handleDelete(data)}
+                    deleteIcon={user === false ? <p /> : <DeleteIcon />}
                   />
                 );
               })}
@@ -321,12 +368,13 @@ function Profile(props) {
             <Grid item style={{ width: "inherit" }}>
               {value === 0 && (
                 <TabContainer style={{ padding: "20px" }}>
-                  {user=== true ? 
+                  {user === true ? (
                     <div>
                       <AddProject />
                     </div>
-                    : <p></p>
-                      }
+                  ) : (
+                    <p />
+                  )}
                   <Grid
                     container
                     direction="column-reverse"
