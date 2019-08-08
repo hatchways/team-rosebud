@@ -14,7 +14,7 @@ import Card from "@material-ui/core/Card";
 import CardMedia from "@material-ui/core/CardMedia";
 import DeleteIcon from "@material-ui/icons/Cancel";
 
-import earth from "../TEST-images/earth.jpg";
+import githubIcon from "../TEST-images/GitHub-Mark-32px.png";
 
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
@@ -344,6 +344,7 @@ function Profile(props) {
                 About:
               </Box>
               <Box fontSize="fontSize">{description}</Box>
+              <img style={{ marginTop: "70px" }} src={githubIcon} alt="" />
             </div>
           </Grid>
         </Grid>
