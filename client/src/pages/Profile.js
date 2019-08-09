@@ -215,10 +215,7 @@ function Profile(props) {
       });
   }
 
-  function refreshPage(e) {
-    setLocation(e.location);
-    setYearsexp(e.yearsexp);
-    setDescription(e.description);
+  function refreshPage() {
     fetch("/api/user/" + params.id, {
       method: "GET",
       headers: {
@@ -229,6 +226,9 @@ function Profile(props) {
         return res.json();
       })
       .then(res => {
+        setLocation(res.location);
+        setYearsexp(res.yearsexp);
+        setDescription(res.description);
         setSkills(res.skills);
       });
   }

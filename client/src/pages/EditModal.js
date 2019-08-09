@@ -44,6 +44,11 @@ function EditModal(props) {
   }
 
   function handleClose() {
+    setChipData([]);
+    setLocation();
+    setYearsexp();
+    setDescription();
+    setSkill();
     setOpen(false);
   }
 
@@ -62,12 +67,7 @@ function EditModal(props) {
       })
     }).then(res => {
       if (res.status === 200) {
-        const parent = {
-          location: location,
-          yearsexp: yearsexp,
-          description: description
-        };
-        props.onChange(parent);
+        props.onChange();
       }
     });
 
@@ -82,10 +82,14 @@ function EditModal(props) {
           body: JSON.stringify({
             name: chip.label
           })
+        }).then(res => {
+          if (res.status === 200) {
+            props.onChange();
+          }
         })
       );
     }
-    setOpen(false);
+    handleClose();
   }
 
   const handleDelete = chipToDelete => () => {
