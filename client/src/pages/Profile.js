@@ -12,7 +12,10 @@ import { grey } from "@material-ui/core/colors";
 import Typography from "@material-ui/core/Typography";
 import Card from "@material-ui/core/Card";
 import CardMedia from "@material-ui/core/CardMedia";
-import DeleteIcon from "@material-ui/icons/Cancel";
+import CancelIcon from "@material-ui/icons/Cancel";
+import DeleteIcon from "@material-ui/icons/Delete";
+import CardActions from "@material-ui/core/CardActions";
+import IconButton from "@material-ui/core/IconButton";
 
 import githubIcon from "../TEST-images/GitHub-Mark-32px.png";
 
@@ -88,6 +91,10 @@ const useStyles = makeStyles(theme => ({
   media: {
     height: 0,
     paddingTop: "56.25%" // 16:9
+  },
+  deleteProject: {
+    marginTop: theme.spacing(0),
+    marginLeft: "auto"
   }
 }));
 
@@ -222,6 +229,12 @@ function Profile(props) {
     });
   };
 
+  const deleteProject = id => {
+    fetch("/api/project/" + id, {
+      method: "DELETE"
+    });
+  };
+
   function handleConnection() {
     fetch("/api/connect", {
       method: "POST",
@@ -312,7 +325,7 @@ function Profile(props) {
                     label={data.name}
                     className={classes.chip}
                     onDelete={handleDelete(data)}
-                    deleteIcon={user === false ? <p /> : <DeleteIcon />}
+                    deleteIcon={user === false ? <p /> : <CancelIcon />}
                   />
                 );
               })}
@@ -400,6 +413,18 @@ function Profile(props) {
                               {project.demoLink}
                             </Typography>
                           </Grid>
+                          {user === true ? (
+                            <CardActions disableSpacing>
+                              <IconButton
+                                className={classes.deleteProject}
+                                onClick={deleteProject(project.id)}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </CardActions>
+                          ) : (
+                            <p />
+                          )}
                         </Card>
                       );
                     })}

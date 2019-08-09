@@ -127,7 +127,7 @@ export default function AddProject() {
             onChange={e => openImage(e.target.files)}
           />
           <label htmlFor="raised-button-file">
-            <Button variant="raised" component="span">
+            <Button variant="contained" component="span">
               Add image
             </Button>
           </label>
