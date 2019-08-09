@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { withRouter } from "react-router-dom";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -15,14 +16,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function AddProject() {
+function AddProject(props) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState();
-  const [projectName, setProjectName] = useState("");
+  const [projectName, setProjectName] = useState();
   const [githubLink, setGithubLink] = useState("");
   const [demoLink, setDemoLink] = useState("");
   const [file, setFile] = useState();
+  const [errorMessage, setErrorMessage] = useState("");
 
   function handleClickOpen() {
     setOpen(true);
@@ -30,9 +32,16 @@ export default function AddProject() {
 
   function handleClose() {
     setOpen(false);
+    setErrorMessage();
+    setImage();
+    setProjectName();
+    setGithubLink();
+    setDemoLink();
+    setFile();
   }
 
   function handleSubmit() {
+    setErrorMessage("");
     fetch("/api/user/" + localStorage.getItem("user_id") + "/project", {
       method: "PUT",
       headers: {
@@ -47,18 +56,26 @@ export default function AddProject() {
       })
     })
       .then(res => {
-        if (res.status === 200) return res.json();
+        if (res.status === 200) {
+          return res.json();
+        } else {
+          setErrorMessage("Opps! Something went wrong. Please try again.");
+        }
       })
       .then(res => {
-        let form = new FormData();
-        form.append("image", file[0]);
+        if (res) {
+          if (file) {
+            let form = new FormData();
+            form.append("image", file[0]);
 
-        fetch("/api/upload_image/" + res.id, {
-          method: "POST",
-          body: form
-        }).then(res => {
-          if (res.status === 200) setOpen(false);
-        });
+            fetch("/api/upload_image/" + res.id, {
+              method: "POST",
+              body: form
+            }).then(res => props.onChange());
+          }
+          handleClose();
+        }
+        props.onChange();
       });
   }
 
@@ -82,7 +99,9 @@ export default function AddProject() {
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">Project</DialogTitle>
+
         <DialogContent>
+          <div style={{ color: "red" }}>{errorMessage}</div>
           <DialogContentText>
             Add the field you want to update in your profile and submit the form
           </DialogContentText>
@@ -144,3 +163,4 @@ export default function AddProject() {
     </div>
   );
 }
+export default withRouter(AddProject);

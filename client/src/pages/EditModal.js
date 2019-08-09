@@ -61,11 +61,7 @@ function EditModal(props) {
         description: description
       })
     }).then(res => {
-      console.log(res);
-      console.log(res.status);
       if (res.status === 200) {
-        //TODO check for successfull update in db
-        //props.history.push("/profile");
         const parent = {
           location: location,
           yearsexp: yearsexp,
@@ -73,7 +69,6 @@ function EditModal(props) {
         };
         props.onChange(parent);
       }
-      //return res.json();
     });
 
     if (chipData.length !== 0) {
@@ -104,13 +99,17 @@ function EditModal(props) {
   };
 
   const divStyle = {
-    marginBottom: '10px',
+    marginBottom: "10px"
   };
-
 
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen} style= {divStyle}>
+      <Button
+        variant="outlined"
+        color="primary"
+        onClick={handleClickOpen}
+        style={divStyle}
+      >
         Edit
       </Button>
       <Dialog

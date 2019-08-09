@@ -203,10 +203,34 @@ function Profile(props) {
     return out;
   }
 
-  function stopRefresh(e) {
+  function fetchProjects() {
+    fetch("/api/user/" + params.id + "/projects", {
+      method: "GET"
+    })
+      .then(res => {
+        return res.json();
+      })
+      .then(res => {
+        setProjects(res.projects);
+      });
+  }
+
+  function refreshPage(e) {
     setLocation(e.location);
     setYearsexp(e.yearsexp);
     setDescription(e.description);
+    fetch("/api/user/" + params.id, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+      .then(res => {
+        return res.json();
+      })
+      .then(res => {
+        setSkills(res.skills);
+      });
   }
 
   const handleDelete = skill => () => {
@@ -232,7 +256,7 @@ function Profile(props) {
   const deleteProject = id => {
     fetch("/api/project/" + id, {
       method: "DELETE"
-    });
+    }).then(res => fetchProjects());
   };
 
   function handleConnection() {
@@ -272,7 +296,7 @@ function Profile(props) {
               />
               {user === true ? (
                 <div>
-                  <EditModal onChange={stopRefresh} />
+                  <EditModal onChange={refreshPage} />
                 </div>
               ) : (
                 <p />
@@ -381,7 +405,7 @@ function Profile(props) {
                 <TabContainer style={{ padding: "20px" }}>
                   {user === true ? (
                     <div>
-                      <AddProject />
+                      <AddProject onChange={fetchProjects} />
                     </div>
                   ) : (
                     <p />
@@ -396,7 +420,7 @@ function Profile(props) {
                         <Card elevation={4} className={classes.projectCard}>
                           <CardMedia
                             className={classes.media}
-                            image={project.image}
+                            image={project.image ? project.image : image}
                           />
                           <Grid
                             container
@@ -417,7 +441,7 @@ function Profile(props) {
                             <CardActions disableSpacing>
                               <IconButton
                                 className={classes.deleteProject}
-                                onClick={deleteProject(project.id)}
+                                onClick={e => deleteProject(project.id)}
                               >
                                 <DeleteIcon />
                               </IconButton>
